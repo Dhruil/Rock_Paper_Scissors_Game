@@ -1,150 +1,72 @@
-// Array of words with their corresponding hints
+// Get  to DOM elements
+const gameContainer = document.querySelector(".container"),
+  userResult = document.querySelector(".user_result img"),
+  cpuResult = document.querySelector(".cpu_result img"),
+  result = document.querySelector(".result"),
+  optionImages = document.querySelectorAll(".option_image");
 
-let words = [
-  // Each object represents a word and its hint
-  {
-    word: "addition",
-    hint: "The process of adding numbers"
-  },
-  {
-    word: "meeting",
-    hint: "Event in which people come together"
-  },
-  {
-    word: "number",
-    hint: "Math symbol used for counting"
-  },
-  {
-    word: "exchange",
-    hint: "The act of trading"
-  },
-  {
-    word: "canvas",
-    hint: "Piece of fabric for oil painting"
-  },
-  {
-    word: "garden",
-    hint: "Space for planting flower and plant"
-  },
-  {
-    word: "position",
-    hint: "Location of someone or something"
-  },
-  {
-    word: "feather",
-    hint: "Hair like outer covering of bird"
-  },
-  {
-    word: "comfort",
-    hint: "A pleasant feeling of relaxation"
-  },
-  {
-    word: "tongue",
-    hint: "The muscular organ of mouth"
-  },
-  {
-    word: "expansion",
-    hint: "The process of increase or grow"
-  },
-  {
-    word: "country",
-    hint: "A politically identified region"
-  },
-  {
-    word: "group",
-    hint: "A number of objects or persons"
-  },
-  {
-    word: "taste",
-    hint: "Ability of tongue to detect flavour"
-  },
-  {
-    word: "store",
-    hint: "Large shop where goods are traded"
-  },
-  {
-    word: "field",
-    hint: "Area of land for farming activities"
-  },
-  {
-    word: "friend",
-    hint: "Person other than a family member"
-  },
-  {
-    word: "pocket",
-    hint: "A bag for carrying small items"
-  },
-  {
-    word: "needle",
-    hint: "A thin and sharp metal pin"
-  },
-  {
-    word: "expert",
-    hint: "Person with extensive knowledge"
-  },
-  {
-    word: "statement",
-    hint: "A declaration of something"
-  },
-  {
-    word: "second",
-    hint: "One-sixtieth of a minute"
-  },
-  {
-    word: "library",
-    hint: "Place containing collection of books"
-  }
-];
+// Loop through each option image element
+optionImages.forEach((image, index) => {
+  image.addEventListener("click", (e) => {
+    image.classList.add("active");
 
-const wordText = document.querySelector(".word"),
-  hintText = document.querySelector(".hint span"),
-  timeText = document.querySelector(".time b"),
-  inputField = document.querySelector("input"),
-  refreshBtn = document.querySelector(".refresh-word"),
-  checkBtn = document.querySelector(".check-word");
+    userResult.src = cpuResult.src =
+      "https://drive.google.com/uc?export=view&id=1_1QksyMi1preMVYLovC397sJNetdz2U-";
+    result.textContent = "Wait...";
 
-let correctWord, timer;
+    // Loop through each option image again
+    optionImages.forEach((image2, index2) => {
+      // If the current index doesn't match the clicked index
+      // Remove the "active" class from the other option images
+      index !== index2 && image2.classList.remove("active");
+    });
 
-// Function to initialize the timer
-const initTimer = (maxTime) => {
-  clearInterval(timer);
-  timer = setInterval(() => {
-    if (maxTime > 0) {
-      maxTime--;
-      return (timeText.innerText = maxTime);
-    }
-    alert(`Time off! ${correctWord.toUpperCase()} was the correct word`);
-    initGame();
-  }, 1000);
-};
+    gameContainer.classList.add("start");
 
-// Function to initialize the game
-const initGame = () => {
-  initTimer(30);
-  let randomObj = words[Math.floor(Math.random() * words.length)];
-  let wordArray = randomObj.word.split("");
-  for (let i = wordArray.length - 1; i > 0; i--) {
-    let j = Math.floor(Math.random() * (i + 1));
-    [wordArray[i], wordArray[j]] = [wordArray[j], wordArray[i]];
-  }
-  wordText.innerText = wordArray.join("");
-  hintText.innerText = randomObj.hint;
-  correctWord = randomObj.word.toLowerCase();
-  inputField.value = "";
-  inputField.setAttribute("maxlength", correctWord.length);
-};
-initGame();
+    // Set a timeout to delay the result calculation
+    let time = setTimeout(() => {
+      gameContainer.classList.remove("start");
 
-// Function to check the user's input word
-const checkWord = () => {
-  let userWord = inputField.value.toLowerCase();
-  if (!userWord) return alert("Please enter the word to check!");
-  if (userWord !== correctWord)
-    return alert(`Oops! ${userWord} is not a correct word`);
-  alert(`Congrats! ${correctWord.toUpperCase()} is the correct word`);
-  initGame();
-};
+      // Get the source of the clicked option image
+      let imageSrc = e.target.querySelector("img").src;
+      // Set the user image to the clicked option image
+      userResult.src = imageSrc;
 
-// Event listeners for the refresh and check buttons
-refreshBtn.addEventListener("click", initGame);
-checkBtn.addEventListener("click", checkWord);
+      // Generate a random number between 0 and 2
+      let randomNumber = Math.floor(Math.random() * 3);
+      // Create an array of CPU image options
+      let cpuImages = [
+        "https://drive.google.com/uc?export=view&id=1_1QksyMi1preMVYLovC397sJNetdz2U-",
+        "https://drive.google.com/uc?export=view&id=1_2yHvrMyxYnUFO7OO7EY-Z-pATVnpQQ1",
+        "https://drive.google.com/uc?export=view&id=1ZsD2SBtbDh-TiP1oW2915YbNxxm_o26G"
+      ];
+      // Set the CPU image to a random option from the array
+      cpuResult.src = cpuImages[randomNumber];
+
+      // Assign a letter value to the CPU option (R for rock, P for paper, S for scissors)
+      let cpuValue = ["R", "P", "S"][randomNumber];
+      // Assign a letter value to the clicked option (based on index)
+      let userValue = ["R", "P", "S"][index];
+
+      // Create an object with all possible outcomes
+      let outcomes = {
+        RR: "Draw",
+        RP: "Cpu",
+        RS: "User",
+        PP: "Draw",
+        PR: "User",
+        PS: "Cpu",
+        SS: "Draw",
+        SR: "Cpu",
+        SP: "User"
+      };
+
+      // Look up the outcome value based on user and CPU options
+      let outComeValue = outcomes[userValue + cpuValue];
+
+      // Display the result
+      result.textContent =
+        userValue === cpuValue ? "Match Draw" : `${outComeValue} Won!!`;
+    }, 2500);
+  });
+});
